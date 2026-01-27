@@ -21,9 +21,10 @@ git clone https://github.com/PivIrina/drone_nav_ros2.git
 ```bash
 colcon build
 ```
-Сбрасываем окружение для сборки
+Настраиваем окружение
 ```bash
-source install/setup.bash
+source /opt/ros/humble/setup.bash   # окружение ROS
+source ./install/setup.bash
 ```
 Для запуска проекта единовременно всех нод выполняем
 ```bash
