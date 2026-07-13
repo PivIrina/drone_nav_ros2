@@ -1,20 +1,25 @@
-from setuptools import setup
+
+from setuptools import setup, find_packages
+import os
+from glob import glob
 
 package_name = 'drone_nav_py'
 
 setup(
     name=package_name,
     version='0.0.0',
-    packages=[package_name],
+    packages=find_packages(),
     data_files=[
-    ('share/ament_index/resource_index/packages',
-        ['resource/drone_nav_py']),
-    ('share/drone_nav_py', ['package.xml']),
-    ('share/drone_nav_py/launch', ['launch/simulation_launch.py']),  
-    ('share/drone_nav_py/meshes', ['meshes/quadrotor.dae']),
-],
+        ('share/ament_index/resource_index/packages',
+            ['resource/' + package_name]),
+        (os.path.join('share', package_name), ['package.xml']),
+        (os.path.join('share', package_name, 'launch'), glob('launch/*.py')),
+        (os.path.join('share', package_name, 'meshes'), glob('meshes/*')),
+    ],
     install_requires=['setuptools'],
     zip_safe=True,
+    maintainer='Your Name',
+    maintainer_email='your_email@example.com',
     description='Drone navigation package',
     license='Apache License 2.0',
     tests_require=['pytest'],

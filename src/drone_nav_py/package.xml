@@ -4,7 +4,7 @@
   <name>drone_nav_py</name>
   <version>0.0.0</version>
   <description>Python package for drone navigation with path planning and interactive obstacles</description>
-  <maintainer>ROS</maintainer>
+  <maintainer email="your_email@example.com">Name</maintainer>
   <license>MIT</license>
 
   <buildtool_depend>ament_python</buildtool_depend>

@@ -1,0 +1,28 @@
+
+build/
+install/
+log/
+
+
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+*.so
+dist/
+
+
+COLCON_IGNORE
+
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+
+.DS_Store
+Thumbs.db
+
+# --- Docker (keep Dockerfile in repo) ---
+# Docker images/containers artifacts if any
