@@ -1,6 +1,6 @@
 import rclpy
 from rclpy.node import Node
-from geometry_msgs.msg import Point, PoseStamped
+from geometry_msgs.msg import Point, PoseStamped  # Добавляем PoseStamped
 from nav_msgs.msg import Path
 from visualization_msgs.msg import Marker
 import heapq
@@ -9,7 +9,7 @@ import math
 class PathNode(Node):
     def __init__(self):
         super().__init__('path_node')
-
+        
         # Настройки карты
         self.map_min = (0.0, 0.0)
         self.map_max = (15.0, 15.0)
@@ -17,32 +17,34 @@ class PathNode(Node):
         self.start = (0.0, 0.0)
         self.goal = (10.0, 10.0)
         self.obstacles = []
-
+        
         # Текущая позиция дрона
         self.current_position = [self.start[0], self.start[1]]
-
+        
         # Полный путь, рассчитанный A*
         self.path_points = []
-
+        
         # Публикаторы
         self.path_pub = self.create_publisher(Path, 'path', 10)
         self.marker_pub = self.create_publisher(Marker, 'drone_marker', 10)
-
-        # Подписка на препятствия
-        self.obstacle_sub = self.create_subscription(Point,'/obstacles', self.obstacle_callback, 10)
-
+        
+        # ✅ Подписываемся на PoseStamped
+        self.obstacle_sub = self.create_subscription(PoseStamped, '/obstacles', self.obstacle_callback, 10)
+        
         # Таймер обновления движения
         self.timer = self.create_timer(0.1, self.update_drone)
-
+        
         # Расчёт начального пути
         self.generate_new_path()
         self.get_logger().info('PathNode with smooth A* started')
 
     def obstacle_callback(self, msg):
-        obstacle = (msg.x, msg.y)
+        # ✅ Извлекаем координаты из PoseStamped
+        obstacle = (msg.pose.position.x, msg.pose.position.y)
         if obstacle not in self.obstacles:
             self.obstacles.append(obstacle)
             self.generate_new_path()
+            self.get_logger().info(f'New obstacle detected at {obstacle}')
 
     def is_inside_map(self, x, y):
         return self.map_min[0] <= x <= self.map_max[0] and self.map_min[1] <= y <= self.map_max[1]
@@ -56,7 +58,7 @@ class PathNode(Node):
         open_set = []
         heapq.heappush(open_set, (0 + self.heuristic(start, goal), 0, start, [start]))
         visited = set()
-
+        
         while open_set:
             f, g, current, path = heapq.heappop(open_set)
             if current in visited:
@@ -64,6 +66,7 @@ class PathNode(Node):
             visited.add(current)
             if current == goal:
                 self.path_points = path
+                self.get_logger().info(f'New path found with {len(path)} points')
                 return
             # Рассматриваем соседние клетки
             for dx, dy in [(self.step,0),(0,self.step),(self.step,self.step),(-self.step,0),(0,-self.step),(-self.step,-self.step)]:
@@ -79,13 +82,13 @@ class PathNode(Node):
     def update_drone(self):
         if not self.path_points:
             return
-
+        
         target = self.path_points[0]
         dx = target[0] - self.current_position[0]
         dy = target[1] - self.current_position[1]
         distance = math.hypot(dx, dy)
         speed = 0.1  # скорость перемещения за таймер
-
+        
         if distance < speed:
             # дошли до точки
             self.current_position[0] = target[0]
@@ -95,7 +98,7 @@ class PathNode(Node):
             # движение к точке
             self.current_position[0] += speed * dx / distance
             self.current_position[1] += speed * dy / distance
-
+        
         self.publish_path()
         self.publish_marker()
 

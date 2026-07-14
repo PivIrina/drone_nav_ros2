@@ -2,13 +2,14 @@ import rclpy
 from rclpy.node import Node
 from interactive_markers.interactive_marker_server import InteractiveMarkerServer
 from visualization_msgs.msg import InteractiveMarker, InteractiveMarkerControl, Marker
-from geometry_msgs.msg import Point
+from geometry_msgs.msg import Point, PoseStamped  # Добавляем PoseStamped
 
 class InteractiveObstacle(Node):
     def __init__(self):
         super().__init__('interactive_obstacle_node')
-
-        self.obstacle_pub = self.create_publisher(Point, '/obstacles', 10)
+        
+        # Меняем тип топика на PoseStamped
+        self.obstacle_pub = self.create_publisher(PoseStamped, '/obstacles', 10)
         self.server = InteractiveMarkerServer(self, 'obstacle_marker')
         self.counter = 0
         self.get_logger().info("InteractiveObstacle node started")
@@ -46,18 +47,21 @@ class InteractiveObstacle(Node):
 
         self.server.insert(marker)  
         self.server.setCallback(marker.name, self.marker_feedback)
-
         self.server.applyChanges()
         self.counter += 1
        
     def marker_feedback(self, feedback):
-        point = Point()
-        point.x = feedback.pose.position.x
-        point.y = feedback.pose.position.y
-        point.z = feedback.pose.position.z
-        self.obstacle_pub.publish(point)
-        self.get_logger().info(f"published obstacle at ({point.x:.2f}, {point.y:.2f}, {point.z:.2f})")
-
+        # Используем PoseStamped вместо Point
+        msg = PoseStamped()
+        msg.header.frame_id = 'map'  # ВАЖНО!
+        msg.header.stamp = self.get_clock().now().to_msg()
+        msg.pose.position.x = feedback.pose.position.x
+        msg.pose.position.y = feedback.pose.position.y
+        msg.pose.position.z = feedback.pose.position.z
+        msg.pose.orientation.w = 1.0
+        
+        self.obstacle_pub.publish(msg)
+        self.get_logger().info(f"published obstacle at ({msg.pose.position.x:.2f}, {msg.pose.position.y:.2f}, {msg.pose.position.z:.2f})")
 
 def main(args=None):
     rclpy.init(args=args)
@@ -65,7 +69,6 @@ def main(args=None):
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
-
 
 if __name__ == "__main__":
     main()
