@@ -16,10 +16,10 @@ def generate_launch_description():
             parameters=[{
                 'map_min_x': 0.0,
                 'map_min_y': 0.0,
-                'map_max_x': 15.0,
-                'map_max_y': 15.0,
+                'map_max_x': 50.0,
+                'map_max_y': 50.0,
                 'goal_x': 10.0,
-                'goal_y': 10.0,
+                'goal_y': 40.0,
                 'step': 0.1
             }]
         ),
@@ -37,8 +37,6 @@ def generate_launch_description():
             name='obstacle_node'
         ),
 
- 
- 
 
         Node(
             package='drone_nav_py',

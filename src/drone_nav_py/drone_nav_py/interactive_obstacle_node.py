@@ -2,13 +2,12 @@ import rclpy
 from rclpy.node import Node
 from interactive_markers.interactive_marker_server import InteractiveMarkerServer
 from visualization_msgs.msg import InteractiveMarker, InteractiveMarkerControl, Marker
-from geometry_msgs.msg import Point, PoseStamped  # Добавляем PoseStamped
+from geometry_msgs.msg import Point, PoseStamped  
 
 class InteractiveObstacle(Node):
     def __init__(self):
         super().__init__('interactive_obstacle_node')
         
-        # Меняем тип топика на PoseStamped
         self.obstacle_pub = self.create_publisher(PoseStamped, '/obstacles', 10)
         self.server = InteractiveMarkerServer(self, 'obstacle_marker')
         self.counter = 0
@@ -51,9 +50,9 @@ class InteractiveObstacle(Node):
         self.counter += 1
        
     def marker_feedback(self, feedback):
-        # Используем PoseStamped вместо Point
+        
         msg = PoseStamped()
-        msg.header.frame_id = 'map'  # ВАЖНО!
+        msg.header.frame_id = 'map'  
         msg.header.stamp = self.get_clock().now().to_msg()
         msg.pose.position.x = feedback.pose.position.x
         msg.pose.position.y = feedback.pose.position.y

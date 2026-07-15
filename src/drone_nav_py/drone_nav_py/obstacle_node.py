@@ -1,6 +1,6 @@
 import rclpy
 from rclpy.node import Node
-from geometry_msgs.msg import Point, PoseStamped  # Добавляем PoseStamped
+from geometry_msgs.msg import Point, PoseStamped  
 from visualization_msgs.msg import Marker
 from std_msgs.msg import ColorRGBA
 import random
@@ -8,8 +8,7 @@ import random
 class ObstaclePublisher(Node):
     def __init__(self):
         super().__init__('obstacle_node')
-        
-        # Меняем тип на PoseStamped
+
         self.point_pub = self.create_publisher(PoseStamped, '/obstacles', 10)
         self.marker_pub = self.create_publisher(Marker, '/obstacles_marker', 10)
         
@@ -23,11 +22,19 @@ class ObstaclePublisher(Node):
         self.create_timer(5.0, self.add_random_obstacle)
         self.get_logger().info('ObstaclePublisher started')
         
-        # Добавляем начальные препятствия
         self.add_obstacle(2.0, 2.0)
-        self.add_obstacle(3.0, 1.0)
-        self.add_obstacle(5.0, 4.0)
-        self.add_obstacle(6.0, 6.0)
+        self.add_obstacle(5.0, 8.0)
+        self.add_obstacle(8.0, 3.0)
+        self.add_obstacle(10.0, 12.0)
+        self.add_obstacle(12.0, 5.0)
+        self.add_obstacle(15.0, 15.0)
+        self.add_obstacle(18.0, 7.0)
+        self.add_obstacle(20.0, 20.0)
+        self.add_obstacle(22.0, 10.0)
+        self.add_obstacle(25.0, 25.0)
+        self.add_obstacle(28.0, 13.0)
+        self.add_obstacle(30.0, 30.0)
+
 
     def add_obstacle(self, x, y, z=0.0):
         obstacle = (float(x), float(y), float(z))
@@ -44,9 +51,9 @@ class ObstaclePublisher(Node):
         for idx, obstacle in enumerate(self.obstacles):
             x, y, z = obstacle
             
-            # ✅ Публикуем PoseStamped вместо Point
+
             pose_msg = PoseStamped()
-            pose_msg.header.frame_id = 'map'  # ВАЖНО!
+            pose_msg.header.frame_id = 'map'  
             pose_msg.header.stamp = self.get_clock().now().to_msg()
             pose_msg.pose.position.x = x
             pose_msg.pose.position.y = y
@@ -54,7 +61,7 @@ class ObstaclePublisher(Node):
             pose_msg.pose.orientation.w = 1.0
             self.point_pub.publish(pose_msg)
             
-            # Публикуем маркер для визуализации
+
             marker = Marker()
             marker.header.frame_id = "map"
             marker.header.stamp = self.get_clock().now().to_msg()
