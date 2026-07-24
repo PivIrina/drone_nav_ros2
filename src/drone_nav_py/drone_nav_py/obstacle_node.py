@@ -14,9 +14,9 @@ class ObstaclePublisher(Node):
         
         self.obstacles = []
         self.map_min_x = 0.0
-        self.map_max_x = 15.0
+        self.map_max_x = 50.0
         self.map_min_y = 0.0
-        self.map_max_y = 15.0
+        self.map_max_y = 50.0
         
         self.create_timer(0.5, self.publish_all_obstacles)
         self.create_timer(5.0, self.add_random_obstacle)
